@@ -1,25 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 
 const DEFAULT_ACTIVITIES = [
-  { id:"call",     label:"Sales Call",           xp:1,   icon:"📞", color:"#00FF94", unit:"per call",    inputType:"tap" },
-  { id:"sale",     label:"Sale",                 xp:0.1, icon:"💰", color:"#FFD700", unit:"XP per kr",   inputType:"sale" },
-  { id:"run",      label:"Running",              xp:10,  icon:"🏃", color:"#FF6B35", unit:"XP per km",   inputType:"km" },
   { id:"gym",      label:"Gym Session",          xp:50,  icon:"🏋️", color:"#FF4D00", unit:"per session", inputType:"tap" },
-  { id:"hourhand", label:"Hourhand (1hr)",       xp:40,  icon:"⌚", color:"#00C2FF", unit:"per hour",    inputType:"tap" },
-  { id:"nophone",  label:"No Phone Before 9am",  xp:30,  icon:"📵", color:"#B388FF", unit:"per day",     inputType:"tap" },
-  { id:"noporn",   label:"No Porn",              xp:20,  icon:"🚫", color:"#FF4466", unit:"per day",     inputType:"tap" },
+  { id:"run",      label:"Running",              xp:10,  icon:"🏃", color:"#FF6B35", unit:"XP per km",   inputType:"km" },
   { id:"reading",  label:"Read 30min",           xp:25,  icon:"📖", color:"#88DDAA", unit:"per session", inputType:"tap" },
+  { id:"water",    label:"Drink 2L Water",       xp:20,  icon:"💧", color:"#00C2FF", unit:"per day",     inputType:"tap" },
+  { id:"meditate", label:"Meditate",             xp:20,  icon:"🧘", color:"#B388FF", unit:"per session", inputType:"tap" },
+  { id:"nophone",  label:"No Phone Before 9am",  xp:30,  icon:"📵", color:"#B388FF", unit:"per day",     inputType:"tap" },
   { id:"sleep",    label:"Sleep Before Midnight",xp:20,  icon:"😴", color:"#7799FF", unit:"per day",     inputType:"tap" },
+  { id:"healthy",  label:"Healthy Meal",         xp:15,  icon:"🥗", color:"#88DDAA", unit:"per meal",    inputType:"tap" },
   // Default negative activity
-  { id:"instagram",label:"Instagram Screen Time",xp:1,   icon:"📱", color:"#FF4466", unit:"-1 XP per 5 min", inputType:"minutes", isNegative:true },
+  { id:"socmed",   label:"Social Media Scroll",  xp:1,   icon:"📱", color:"#FF4466", unit:"-1 XP per 5 min", inputType:"minutes", isNegative:true },
 ];
 
 const DEFAULT_MILESTONES = [
-  { id:"t1", xpRequired:5000,  title:"IRON",    icon:"🔩", reward:"08Burger — go crazy",            color:"#9E9E9E" },
-  { id:"t2", xpRequired:10000, title:"BRONZE",  icon:"🥉", reward:"Joint with the boys",            color:"#CD7F32" },
-  { id:"t3", xpRequired:20000, title:"SILVER",  icon:"🥈", reward:"New watch mod for Hourhand",     color:"#C0C0C0" },
-  { id:"t4", xpRequired:40000, title:"GOLD",    icon:"🥇", reward:"Book a flight — anywhere",       color:"#FFD700" },
-  { id:"t5", xpRequired:80000, title:"DIAMOND", icon:"💎", reward:"Your dream reward — you decide", color:"#00DFFF" },
+  { id:"t1", xpRequired:5000,  title:"IRON",    icon:"🔩", reward:"Choose your own reward 🎁",  color:"#9E9E9E" },
+  { id:"t2", xpRequired:10000, title:"BRONZE",  icon:"🥉", reward:"Choose your own reward 🎁",  color:"#CD7F32" },
+  { id:"t3", xpRequired:20000, title:"SILVER",  icon:"🥈", reward:"Choose your own reward 🎁",  color:"#C0C0C0" },
+  { id:"t4", xpRequired:40000, title:"GOLD",    icon:"🥇", reward:"Choose your own reward 🎁",  color:"#FFD700" },
+  { id:"t5", xpRequired:80000, title:"DIAMOND", icon:"💎", reward:"Choose your own reward 🎁",  color:"#00DFFF" },
 ];
 
 const TIER_RANGES = [
@@ -32,11 +31,11 @@ const TIER_RANGES = [
 const TIER_COLORS = { 1:"#9E9E9E", 2:"#CD7F32", 3:"#C0C0C0", 4:"#FFD700", 5:"#00DFFF" };
 
 const DEFAULT_TIER_REWARDS = [
-  ["Movie night — 200kr snacks","New cap or tee","Takeaway of choice","Guilt-free lazy Sunday","Sushi order"],
-  ["New gym accessory","08Burger again","Bowling night","200kr free spend","Nice coffee + pastry day"],
-  ["500kr Hourhand budget","New book","Dinner out, your pick","New workout gear","Day trip from Stockholm"],
-  ["Concert ticket","New watch strap","1000kr free spend","Weekend in Sweden","New gym shoes"],
-  ["Full Hourhand restock","Big watch mod","Trip to see your girlfriend","Solo trip somewhere new","Diamond reward — you decide"],
+  ["Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁"],
+  ["Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁"],
+  ["Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁"],
+  ["Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁"],
+  ["Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁","Choose your reward 🎁"],
 ];
 
 function buildDefaultLevels() {
@@ -571,7 +570,7 @@ export default function App() {
       <div style={{ padding:"24px 20px 0" }}>
         <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start" }}>
           <div>
-            <div style={{ fontFamily:"'Archivo Black'",fontSize:"10px",letterSpacing:"4px",color:"#333",marginBottom:"4px" }}>LAURIN // STOCKHOLM</div>
+            <div style={{ fontFamily:"'Archivo Black'",fontSize:"10px",letterSpacing:"4px",color:"#333",marginBottom:"4px" }}>LEVEL XP // YOUR JOURNEY</div>
             <div style={{ fontFamily:"'Archivo Black'",fontSize:"42px",lineHeight:1,letterSpacing:"-1px",transition:"color 0.3s",color:displayXP < 0 ? "#FF4466" : "inherit" }}>
               {displayXP.toLocaleString()}
               <span style={{ fontSize:"13px",color:"#444",marginLeft:"6px",letterSpacing:"2px" }}>XP</span>
@@ -583,7 +582,7 @@ export default function App() {
             </button>
             <div style={{ textAlign:"right" }}>
               <div style={{ color:"#bbb",fontSize:"11px" }}>{todayXP >= 0 ? "+" : ""}{todayXP} today</div>
-              <div style={{ color:"#555",fontSize:"10px" }}>{todayCalls} calls · {streak}🔥 day streak</div>
+              <div style={{ color:"#555",fontSize:"10px" }}>{streak}🔥 day streak</div>
             </div>
           </div>
         </div>
@@ -955,7 +954,7 @@ export default function App() {
 
             {/* Log list */}
             {log.length===0 ? (
-              <div style={{ color:"#333",textAlign:"center",padding:"60px 0",fontSize:"13px" }}>Nothing logged yet.<br/>Start with a call.</div>
+              <div style={{ color:"#333",textAlign:"center",padding:"60px 0",fontSize:"13px" }}>Nothing logged yet.<br/>Log your first activity above.</div>
             ) : (
               <>
                 <div style={{ fontSize:"10px",color:"#444",letterSpacing:"2px",marginBottom:"12px",marginTop:"16px" }}>TAP ✎ TO EDIT · ✕ TO REMOVE</div>
