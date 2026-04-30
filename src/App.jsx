@@ -64,8 +64,81 @@ function toSvDate(d) { return d.toLocaleDateString("sv-SE"); }
 function getWeekStart() { const d = new Date(); d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0); return d; }
 function getLastWeekStart() { const d = getWeekStart(); d.setDate(d.getDate()-7); return d; }
 
-const EMOJI_OPTIONS = ["🍳","💧","🥗","🧘","📝","🎯","🚴","🏊","🧠","💊","🛌","🚶","🎸","🎨","🧹","📞","💼","🤝","📚","🌅","🥤","🏆","⭐","🔥","📱","🎮","🍺","🍕","😴","🚬","📺"];
+const EMOJI_CATEGORIES = {
+  "⭐ All":       ["🏋️","🏃","🚴","🏊","🤸","⚽","🏀","🎾","🥊","🧗","🏄","🤼","🏇","⛹️","🤺","🏂","🎿","🏌️","🥋","🎯","🤾","🚣","🤽","💧","🥗","🥤","🍳","🥦","🍎","🧃","💊","🩺","🧘","😴","🛌","🧖","🦷","🫀","🩹","🥑","🧬","🩻","📚","📖","📝","🧠","💡","🎓","🔬","🖊️","📐","🗂️","📓","🧩","🔭","🧪","📜","💼","💻","📞","📊","🗓️","✅","⏰","📧","🗒️","🤝","🖥️","📌","📁","📎","💰","💵","📈","🏆","⭐","🥇","🎖️","🎁","🔑","🪙","🥈","🥉","🏅","💎","👑","🌅","🌙","🚿","🧹","🛒","🚗","🚶","🧳","🏠","🌿","♻️","🐕","🧺","🛁","🪴","🕯️","🎸","🎨","🎬","📷","🎹","✏️","🎭","🎤","🎧","📻","🎲","🃏","🎺","🥁","🎻","🖼️","📱","🎮","🍺","🍕","🚬","📺","🍔","🍫","😤","🙅","🍷","🍭","🍟","🧁","🔥","⚡","🌟","🔩","🌈","❤️","🧲","🪄","☀️","🌊","🍀","🦋","🌸","💫","🎉","🏁"],
+  "🏋️ Fitness":  ["🏋️","🏃","🚴","🏊","🤸","⚽","🏀","🎾","🥊","🧗","🏄","🤼","🏇","⛹️","🤺","🏂","🎿","🏌️","🥋","🎯","🤾","🚣","🤽"],
+  "🥗 Health":   ["💧","🥗","🥤","🍳","🥦","🍎","🧃","💊","🩺","🧘","😴","🛌","🧖","🦷","🫀","🩹","🥑","🧬","🩻"],
+  "📚 Learning": ["📚","📖","📝","🧠","💡","🎓","🔬","🖊️","📐","🗂️","📓","🧩","🔭","🧪","📜"],
+  "💼 Work":     ["💼","💻","📞","📊","🗓️","✅","⏰","📧","🗒️","🤝","🖥️","📌","📁","📎"],
+  "💰 Goals":    ["💰","💵","📈","🏆","⭐","🥇","🎖️","🎁","🔑","🪙","🥈","🥉","🏅","💎","👑"],
+  "🏠 Lifestyle":["🌅","🌙","🚿","🧹","🛒","🚗","🚶","🧳","🏠","🌿","♻️","🐕","🧺","🛁","🪴","🕯️"],
+  "🎸 Creative": ["🎸","🎨","🎬","📷","🎹","✏️","🎭","🎤","🎧","📻","🎲","🃏","🎺","🥁","🎻","🖼️"],
+  "📱 Vices":    ["📱","🎮","🍺","🍕","🚬","📺","🍔","🍫","😤","🙅","🍷","🍭","🍟","🧁"],
+};
+const EMOJI_OPTIONS = EMOJI_CATEGORIES["⭐ All"];
 const INPUT_TYPES = [["tap","Tap"],["quantity","×Qty"],["km","km"],["amount","kr"],["minutes","min"]];
+
+// ── EMOJI PICKER ─────────────────────────────────────────────────────────────
+function EmojiPicker({ selected, onSelect }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState("⭐ All");
+
+  const allEmojis = Object.values(EMOJI_CATEGORIES).flat();
+  const unique = [...new Set(allEmojis)];
+  const filtered = search.trim()
+    ? unique.filter(e => e.includes(search.trim()))
+    : (EMOJI_CATEGORIES[activeCategory] || unique);
+
+  return (
+    <div style={{ marginBottom:"12px" }}>
+      <div style={{ fontSize:"10px",color:"#888",marginBottom:"6px" }}>ICON</div>
+      {/* Selected emoji + open button */}
+      <button onClick={() => setOpen(o => !o)} style={{ display:"flex",alignItems:"center",gap:"8px",background:"#0d0d0d",border:"1px solid #2a2a2a",borderRadius:"8px",padding:"8px 12px",cursor:"pointer",width:"100%" }}>
+        <span style={{ fontSize:"22px" }}>{selected}</span>
+        <span style={{ color:"#555",fontFamily:"'DM Mono',monospace",fontSize:"10px",letterSpacing:"1px",flex:1,textAlign:"left" }}>TAP TO CHANGE</span>
+        <span style={{ color:"#555",fontSize:"12px" }}>{open ? "▲" : "▼"}</span>
+      </button>
+
+      {open && (
+        <div style={{ background:"#0d0d0d",border:"1px solid #2a2a2a",borderRadius:"10px",marginTop:"6px",overflow:"hidden" }}>
+          {/* Search bar */}
+          <div style={{ padding:"10px 10px 0" }}>
+            <input
+              placeholder="Search emoji..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{ width:"100%",background:"#141414",border:"1px solid #2a2a2a",borderRadius:"6px",padding:"7px 10px",color:"#fff",fontFamily:"'DM Mono',monospace",fontSize:"11px",outline:"none",boxSizing:"border-box" }}
+            />
+          </div>
+
+          {/* Category tabs */}
+          {!search.trim() && (
+            <div style={{ display:"flex",gap:"4px",padding:"8px 10px",overflowX:"auto",scrollbarWidth:"none" }}>
+              {Object.keys(EMOJI_CATEGORIES).map(cat => (
+                <button key={cat} onClick={() => setActiveCategory(cat)}
+                  style={{ background:activeCategory===cat?"#2a2a2a":"none",border:`1px solid ${activeCategory===cat?"#444":"#1e1e1e"}`,borderRadius:"6px",padding:"4px 8px",cursor:"pointer",fontSize:"13px",whiteSpace:"nowrap",flexShrink:0 }}>
+                  {cat.split(" ")[0]}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Emoji grid */}
+          <div style={{ display:"flex",flexWrap:"wrap",gap:"4px",padding:"6px 10px 10px",maxHeight:"160px",overflowY:"auto" }}>
+            {filtered.map(e => (
+              <button key={e} onClick={() => { onSelect(e); setOpen(false); setSearch(""); }}
+                style={{ background:selected===e?"#2a2a2a":"none",border:`1px solid ${selected===e?"#555":"transparent"}`,borderRadius:"6px",padding:"5px",cursor:"pointer",fontSize:"20px",lineHeight:1 }}>
+                {e}
+              </button>
+            ))}
+            {filtered.length === 0 && <div style={{ color:"#444",fontSize:"11px",fontFamily:"'DM Mono',monospace",padding:"10px 0" }}>No results</div>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── ADD ACTIVITY BUTTON ──────────────────────────────────────────────────────
 function AddActivityButton({ setActivities }) {
@@ -107,9 +180,8 @@ function AddActivityButton({ setActivities }) {
         </button>
       </div>
 
-      <div style={{ display:"flex",flexWrap:"wrap",gap:"6px",marginBottom:"12px" }}>
-        {EMOJI_OPTIONS.map(e => <button key={e} onClick={() => setIcon(e)} style={{ background:icon===e?"#2a2a2a":"none",border:`1px solid ${icon===e?"#555":"#1e1e1e"}`,borderRadius:"6px",padding:"4px 6px",cursor:"pointer",fontSize:"18px" }}>{e}</button>)}
-      </div>
+      <EmojiPicker selected={icon} onSelect={setIcon} />
+
       <div style={{ display:"flex",gap:"8px",marginBottom:"10px" }}>
         <div style={{ flex:"0 0 70px" }}>
           <div style={{ fontSize:"10px",color:"#888",marginBottom:"4px" }}>XP</div>
@@ -580,6 +652,12 @@ export default function App() {
             <button onClick={() => setEditMode(e => !e)} style={{ background:editMode?"#1a1500":"#141414",border:`1px solid ${editMode?"#FFD70044":"#222"}`,borderRadius:"8px",padding:"6px 12px",color:editMode?"#FFD700":"#777",fontFamily:"'DM Mono',monospace",fontSize:"10px",letterSpacing:"2px",cursor:"pointer",transition:"all 0.15s" }}>
               {editMode?"✓ DONE":"✎ EDIT"}
             </button>
+            {editMode && (
+              <button onClick={() => { if(window.confirm("Reset ALL XP and history? This cannot be undone.")) { setXp(0); setDisplayXP(0); setLog([]); setStreak(0); setLastLogDate(null); setTodayCounts({}); } }}
+                style={{ background:"#1a0505",border:"1px solid #FF446644",borderRadius:"8px",padding:"6px 12px",color:"#FF4466",fontFamily:"'DM Mono',monospace",fontSize:"10px",letterSpacing:"2px",cursor:"pointer",transition:"all 0.15s" }}>
+                ↺ RESET
+              </button>
+            )}
             <div style={{ textAlign:"right" }}>
               <div style={{ color:"#bbb",fontSize:"11px" }}>{todayXP >= 0 ? "+" : ""}{todayXP} today</div>
               <div style={{ color:"#555",fontSize:"10px" }}>{streak}🔥 day streak</div>
